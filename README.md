@@ -14,13 +14,16 @@ annotations we keep about where and how we know people.
 
 ## Data
 
-The data resides in the `data/` directory and has the following shape in the
+The [raw 
+data](https://github.com/mhausenblas/usn-app/blob/master/data/usn-base-data.csv)
+resides in the `data/` directory and has the following shape in the
 base (CSV) format:
 
 	timestamp,originator,action,network,target,context
-	2012-03-12T22:54:13-07:00,Michael,ADD,I,Ora Hatfield,Some witty stuff here
-	2012-10-05T01:30:42-07:00,Michael,ADD,I,Rafael Baldwin,A comment there
-	2012-11-23T01:53:42-08:00,Michael,REMOVE,I,Marvin Garrison,Whatever note ...
+	2012-03-12T22:54:13-07:00,Michael,ADD,I,Ora Hatfield,Some witty stuff 
+here
+	2012-11-23T01:53:42-08:00,Michael,REMOVE,I,Marvin Garrison,Whatever 
+note ...
 
 with the following schema:
 
@@ -44,11 +47,35 @@ All fields are always present, that is, there are no optional fields. The test
 data has been generated using [generatedata.com](http://www.generatedata.com/
 "generatedata.com") in five runs totaling some 500 rows of raw data. 
 
-## Architecture
-
-TBD.
 
 ## Processing
+
+The raw data is first 
+[pre-processed](https://github.com/mhausenblas/usn-app/blob/master/data/usn-prep
+rocess.sh) and 
+[loaded](https://github.com/mhausenblas/usn-app/blob/master/hive-cmds.txt) into 
+Hive:
+
+	hive> CREATE TABLE usn_base (
+	 actiontime STRING,
+	 originator STRING,
+	 action STRING,
+	 network STRING,
+	 target STRING,
+	 context STRING
+	) ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+	hive> LOAD DATA LOCAL INPATH 
+	'/Users/mhausenblas2/Documents/repos/usn-app/data/usn-base-data.csv'
+	INTO TABLE usn_base;
+
+
+## Dependencies 
+
+* Hive 0.10.0
+* HBase 0.94.4
+
+## Architecture
 
 TBD.
 
