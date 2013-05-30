@@ -1,0 +1,26 @@
+################################################################################
+# Create a Hive table for the raw, base data
+#
+# The input CSV file has the following structure:
+#
+#  timestamp|originator|action|network|target|context
+#  2012-03-12T22:54:13-07:00|Michael|ADD|I|Ora Hatfield|Some witty stuff here
+
+CREATE TABLE USN_BASE (
+ actiontime STRING,
+ originator STRING,
+ action STRING,
+ network STRING,
+ target STRING,
+ context STRING
+) ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+
+################################################################################
+# Load data from input CSV file
+
+DROP TABLE IF EXISTS USN_BASE;
+
+LOAD DATA LOCAL INPATH 
+'/Users/mhausenblas2/Documents/repos/usn-app/data/usn-base-data.csv'
+INTO TABLE USN_BASE;
