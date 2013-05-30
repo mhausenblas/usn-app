@@ -86,10 +86,18 @@ Ted	L	Emmanuel Hutchinson
 Ted	L	Drake Shaffer
 Time taken: 11.152 seconds
 
+hive> DROP TABLE IF EXISTS usn_friends;
+
 hive> CREATE TABLE usn_friends AS
-      SELECT originator AS username, network, target AS friend 
+      SELECT originator AS username, network, target AS friend, context AS note
       FROM usn_base
-      ORDER BY username, network;
+      WHERE action = 'ADD'
+      ORDER BY username, network, username;
+
+hive> SELECT username, friend FROM usn_friends;
+hive> SELECT network, count(username) 
+      FROM usn_friends
+      GROUP BY network;
 
 
 ################################################################################
