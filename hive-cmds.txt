@@ -86,6 +86,11 @@ Ted	L	Emmanuel Hutchinson
 Ted	L	Drake Shaffer
 Time taken: 11.152 seconds
 
+hive> CREATE TABLE usn_friends AS
+      SELECT originator AS username, network, target AS friend 
+      FROM usn_base
+      ORDER BY username, network;
+
 
 ################################################################################
 # View: friends statistics for given user
