@@ -1,3 +1,8 @@
+--------------------------------------------------------------------------------
+
+# Hive version used: 0.10.0
+
+
 ################################################################################
 # Create a Hive table for the raw, base data
 #
@@ -59,6 +64,8 @@ OK
 499
 Time taken: 11.045 seconds
 
+
+
 --------------------------------------------------------------------------------
 
 # VIEWS
@@ -79,3 +86,34 @@ Ted	L	Emmanuel Hutchinson
 Ted	L	Drake Shaffer
 Time taken: 11.152 seconds
 
+
+################################################################################
+# View: friends statistics for given user
+
+hive> SELECT network, count(target)
+      FROM usn_base
+      WHERE originator = 'Ted'
+      GROUP BY network;
+...
+OK
+F	25
+G	25
+I	25
+L	25
+Time taken: 11.097 seconds
+
+
+################################################################################
+# View: statistics for given network
+
+hive> SELECT originator, count(target)
+      FROM usn_base
+      WHERE network = 'G'
+      GROUP BY originator;
+...
+OK
+Ellen	25
+John	24
+Steve	25
+Ted		25
+Time taken: 11.121 seconds
