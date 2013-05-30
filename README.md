@@ -20,10 +20,8 @@ resides in the `data/` directory and has the following shape in the
 base (CSV) format:
 
 	timestamp,originator,action,network,target,context
-	2012-03-12T22:54:13-07:00,Michael,ADD,I,Ora Hatfield,Some witty stuff 
-here
-	2012-11-23T01:53:42-08:00,Michael,REMOVE,I,Marvin Garrison,Whatever 
-note ...
+	2012-03-12T22:54:13-07:00,Michael,ADD,I,Ora Hatfield,Some witty stuff here 
+	2012-11-23T01:53:42-08:00,Michael,REMOVE,I,Marvin Garrison,Whatever note ...
 
 with the following schema:
 
@@ -44,15 +42,15 @@ indicating the respective network where the action has been performed, with:
 added or where one has met the person in the first place
 
 All fields are always present, that is, there are no optional fields. The test
-data has been generated using [generatedata.com](http://www.generatedata.com/
-"generatedata.com") in five runs totaling some 500 rows of raw data. 
+data has been generated using [generatedata.com](http://www.generatedata.com/) 
+in five runs totaling some 500 rows of raw data. 
 
 
 ## Processing
 
 The raw data is first 
-[pre-processed](https://github.com/mhausenblas/usn-app/blob/master/data/usn-prep
-rocess.sh) and 
+[pre-processed
+](https://github.com/mhausenblas/usn-app/blob/master/data/usn-preprocess.sh) and 
 [loaded](https://github.com/mhausenblas/usn-app/blob/master/hive-cmds.txt) into 
 Hive:
 
