@@ -4,9 +4,9 @@
 # The input CSV file has the following structure:
 #
 #  timestamp|originator|action|network|target|context
-#  2012-03-12T22:54:13-07:00|Michael|ADD|I|Ora Hatfield|Some witty stuff here
+#  2012-03-12T22:54:13-07:00|Michael|ADD|I|Ora Hatfield|consequat enim diam
 
-CREATE TABLE USN_BASE (
+hive> CREATE TABLE usn_base (
  actiontime STRING,
  originator STRING,
  action STRING,
@@ -19,8 +19,63 @@ CREATE TABLE USN_BASE (
 ################################################################################
 # Load data from input CSV file
 
-DROP TABLE IF EXISTS USN_BASE;
+hive> DROP TABLE IF EXISTS usn_base;
 
-LOAD DATA LOCAL INPATH 
+hive> LOAD DATA LOCAL INPATH 
 '/Users/mhausenblas2/Documents/repos/usn-app/data/usn-base-data.csv'
-INTO TABLE USN_BASE;
+INTO TABLE usn_base;
+
+
+################################################################################
+# Check if import was successful
+
+hive> SELECT * FROM usn_base;
+OK
+2012-03-12T22:54:13-07:00	Michael	ADD	I	Ora Hatfield	consequat enim diam 
+2012-10-05T01:30:42-07:00	Michael	ADD	I	Rafael Baldwin	nibh. Aliquam ornare
+...
+Time taken: 0.117 seconds
+
+hive> SELECT originator, target FROM usn_base;
+Total MapReduce jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Job running in-process (local Hadoop)
+Hadoop job information for null: number of mappers: 0; number of reducers: 0
+2013-05-30 15:04:05,920 null map = 0%,  reduce = 0%
+2013-05-30 15:04:08,924 null map = 100%,  reduce = 0%
+Ended Job = job_local_0001
+Execution completed successfully
+Mapred Local Task Succeeded . Convert the Join into MapJoin
+OK
+Michael	Ora Hatfield
+Michael	Rafael Baldwin
+...
+Time taken: 7.788 seconds
+
+hive> SELECT count(DISTINCT target) FROM usn_base;
+OK
+...
+499
+Time taken: 11.045 seconds
+
+--------------------------------------------------------------------------------
+
+# VIEWS
+
+################################################################################
+# Batch view: list friends ordered per username and network
+
+hive> SELECT originator AS username, network, target AS friend 
+      FROM usn_base
+      ORDER BY username, network;
+...
+Ellen	G	Beverly Pennington
+Ellen	G	Kieran Gardner
+Ellen	G	Portia Lee
+...
+Ted	L	Shaine Mercer
+Ted	L	Emmanuel Hutchinson
+Ted	L	Drake Shaffer
+Time taken: 11.152 seconds
+
