@@ -67,15 +67,21 @@ Hive:
 	'/Users/mhausenblas2/Documents/repos/usn-app/data/usn-base-data.csv'
 	INTO TABLE usn_base;
 
+## Architecture
+
+TBD.
 
 ## Dependencies 
 
 * Hive 0.10.0
 * HBase 0.94.4
 
-## Architecture
+## To do
 
-TBD.
+* Generate the data - DONE
+* Implement the batch layer using Hive - DONE
+* Implement the serving layer using HBase
+* Implement user interface and some examples
 
 ## License
 
