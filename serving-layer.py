@@ -12,7 +12,7 @@ Example:
 @status: init
 """
 
-import sys, logging, datetime, time, happybase
+import sys, logging, datetime, time, happybase, hiver
 from os import curdir, sep
 
 ###############
@@ -60,6 +60,12 @@ port=self.server_port)
 		# It only has one column family called 'a' for acquaintance and
 		# three columns: a:name (the target), a:network, and a:comment 
 		self.create_table(table_name=TABLE_USN_FRIENDS, col_fam={'a': {}})
+
+		# Query Hive and fill HBase table
+		# client = hiver.connect('localhost', 10000)
+		# client.execute('SELECT username, friend FROM usn_friends')
+		# rows = client.fetchAll()
+		# print rows
 		logging.info('Initialized USN table.')
 	
 	def clear(self):

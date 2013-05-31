@@ -85,8 +85,9 @@ Hive:
 Make sure you have HBase 0.94.x installed or access to a setup (cluster, cloud) 
 where it is running.
 
-First you need to launch HBase and the Thrift server. Go to the HBase home 
-directory and do the following:
+**Preparation** First you need to launch HBase and the Thrift server. 
+
+Go to the HBase home directory and do the following:
 
 	$ ./bin/start-hbase.sh 
 	
@@ -100,7 +101,15 @@ directory and do the following:
 	13/05/31 09:39:09 INFO thrift.ThriftServerRunner: Using thrift server type threadpool
 	...
 
-Then you can initialize the USN table as so:
+**Init** First you need to initialize the USN table.
+
+Make sure Hive service is running:
+
+	$ hive --service hiveserver
+	Starting Hive Thrift Server
+	...
+
+Then, from the USN home directory, do the following:
 
 	$ python serving-layer.py localhost INIT
 	2013-05-31T09:39:38 Initialized USN table.
@@ -120,6 +129,8 @@ When you're done, don't forget to shut down HBase (again, from HBase home):
 
 	$ ./bin/stop-hbase.sh
 
+
+
 ## Architecture
 
 TBD.
@@ -127,7 +138,9 @@ TBD.
 ## Dependencies 
 
 * Hive 0.10.x
+* [Hiver](https://github.com/tebeka/hiver) for Python interaction
 * HBase 0.94.x
+* [HappyBase](https://github.com/wbolster/happybase) for Python interaction
 
 ## To do
 
