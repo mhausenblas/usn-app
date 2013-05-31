@@ -73,7 +73,7 @@ Time taken: 11.045 seconds
 ################################################################################
 # Batch view: list friends ordered per username and network
 
-hive> SELECT originator AS username, network, target AS friend 
+hive> SELECT actiontime, originator AS username, network, target AS friend 
       FROM usn_base
       ORDER BY username, network;
 ...
@@ -89,7 +89,8 @@ Time taken: 11.152 seconds
 hive> DROP TABLE IF EXISTS usn_friends;
 
 hive> CREATE TABLE usn_friends AS
-      SELECT originator AS username, network, target AS friend, context AS note
+      SELECT actiontime, originator AS username, network, 
+      target AS friend, context AS note
       FROM usn_base
       WHERE action = 'ADD'
       ORDER BY username, network, username;
