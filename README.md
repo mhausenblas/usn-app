@@ -48,6 +48,11 @@ in five runs totaling some 500 rows of raw data.
 
 ## Processing
 
+## Batch layer
+
+Make sure you have Hive 0.10.0 installed or access to a setup (cluster, cloud) 
+where it is running.
+
 The raw data is first 
 [pre-processed
 ](https://github.com/mhausenblas/usn-app/blob/master/data/usn-preprocess.sh) and 
@@ -67,14 +72,62 @@ Hive:
 	'/Users/mhausenblas2/Documents/repos/usn-app/data/usn-base-data.csv'
 	INTO TABLE usn_base;
 
+	hive> CREATE TABLE usn_friends AS
+	      SELECT originator AS username, network, target AS friend, context AS note
+	      FROM usn_base
+	      WHERE action = 'ADD'
+	      ORDER BY username, network, username;
+
+
+
+### Serving layer
+
+Make sure you have HBase 0.94.x installed or access to a setup (cluster, cloud) 
+where it is running.
+
+First you need to launch HBase and the Thrift server. Go to the HBase home 
+directory and do the following:
+
+	$ ./bin/start-hbase.sh 
+	
+	starting master, logging to /Users/mhausenblas2/bin/hbase-0.94.4/logs/hbase-mhausenblas2-master-Michaels-MacBook-Pro-2.local.out
+
+	$ ./bin/hbase thrift start -p 9191
+	13/05/31 09:39:09 INFO util.VersionInfo: HBase 0.94.4
+	13/05/31 09:39:09 INFO util.VersionInfo: Subversion https://svn.apache.org/repos/asf/hbase/branches/0.94 -r 1428173
+	13/05/31 09:39:09 INFO util.VersionInfo: Compiled by jenkins on Thu Jan  3 06:29:56 UTC 2013
+	13/05/31 09:39:09 INFO thrift.ThriftServerRunner: Using default thrift server type
+	13/05/31 09:39:09 INFO thrift.ThriftServerRunner: Using thrift server type threadpool
+	...
+
+Then you can initialize the USN table as so:
+
+	$ python serving-layer.py localhost INIT
+	2013-05-31T09:39:38 Initialized USN table.
+
+You can use the shell to verify if the serving layer has been initialized correctly:
+
+	$ ./bin/hbase shell
+	hbase(main):001:0> describe 'usn_friends'
+	DESCRIPTION                                                                                          ENABLED
+	 {NAME => 'usn_friends', FAMILIES => [{NAME => 'a', DATA_BLOCK_ENCODING => 'NONE', BLOOMFILTER => 'N true
+	 ONE', REPLICATION_SCOPE => '0', VERSIONS => '3', COMPRESSION => 'NONE', MIN_VERSIONS => '0', TTL =>
+	  '-1', KEEP_DELETED_CELLS => 'false', BLOCKSIZE => '65536', IN_MEMORY => 'false', ENCODE_ON_DISK =>
+	  'true', BLOCKCACHE => 'false'}]}
+	1 row(s) in 0.2450 seconds
+
+When you're done, don't forget to shut down HBase (again, from HBase home):
+
+	$ ./bin/stop-hbase.sh
+
 ## Architecture
 
 TBD.
 
 ## Dependencies 
 
-* Hive 0.10.0
-* HBase 0.94.4
+* Hive 0.10.x
+* HBase 0.94.x
 
 ## To do
 
