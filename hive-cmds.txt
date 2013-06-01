@@ -42,16 +42,6 @@ OK
 Time taken: 0.117 seconds
 
 hive> SELECT originator, target FROM usn_base;
-Total MapReduce jobs = 1
-Launching Job 1 out of 1
-Number of reduce tasks is set to 0 since there's no reduce operator
-Job running in-process (local Hadoop)
-Hadoop job information for null: number of mappers: 0; number of reducers: 0
-2013-05-30 15:04:05,920 null map = 0%,  reduce = 0%
-2013-05-30 15:04:08,924 null map = 100%,  reduce = 0%
-Ended Job = job_local_0001
-Execution completed successfully
-Mapred Local Task Succeeded . Convert the Join into MapJoin
 OK
 Michael	Ora Hatfield
 Michael	Rafael Baldwin
@@ -95,7 +85,7 @@ hive> CREATE TABLE usn_friends AS
       WHERE action = 'ADD'
       ORDER BY username, network, username;
 
-hive> SELECT username, friend FROM usn_friends;
+hive> SELECT actiontime, username, friend FROM usn_friends;
 hive> SELECT network, count(username) 
       FROM usn_friends
       GROUP BY network;
