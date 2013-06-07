@@ -8,19 +8,21 @@
 #
 
 function usage() {
-	printf "Usage: %s\n" $0
+	printf "Usage: %s INIT | CLEAN\n" $0
+}
+
+function init_workspace() {
+	printf "Initializing the USN app.\n"
 }
 
 function exec_hive_from_file() {
 	printf "EXECUTING %s\n" $1
-	# hive -S -f $2
+	hive -S -f $1
 }
 
-function exec_hive_from_str() {
- hive -S -e $2
-}
+USN_CREATE_BASE=usn_create_base.hql
 
 case $1 in
-	INIT )	exec_hive_from_file $2 ;;
+	INIT )	exec_hive_from_file $USN_CREATE_BASE  ;;
 	* )		usage ; exit 1 ; ;;
 esac

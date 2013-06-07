@@ -1,2 +1,4 @@
 *.py[cod]
 .DS_Store
+*metastore_db
+*.log
