@@ -131,6 +131,18 @@ You can use the shell to verify if the serving layer has been initialized correc
 	  '-1', KEEP_DELETED_CELLS => 'false', BLOCKSIZE => '65536', IN_MEMORY => 'false', ENCODE_ON_DISK =>
 	  'true', BLOCKCACHE => 'false'}]}
 	1 row(s) in 0.2450 seconds
+	
+A sample query (scan, in HBase jargon) might look as follows:
+
+	hbase(main):001:0> scan 'usn_friends', { COLUMNS => ['a'], FILTER => "ValueFilter(=,'substring:L')", STARTROW => 'Ted_2013-01'}
+	ROW                                      COLUMN+CELL
+	 Ted_2013-01-17                          column=a:comment, timestamp=1370630348723, value=urna et arcu imperdiet ullamcorper. Duis at lacus. Quisque purus
+	 ...
+	 Ted_2013-03-25                          column=a:network, timestamp=1370630348769, value=L
+	8 row(s) in 0.0460 seconds
+
+The above query translates into: give me all acquaintances of `Ted` in the
+`LinkedIn` network, starting from January 2013 on. 
 
 When you're done, don't forget to shut down HBase (again, from HBase home):
 
