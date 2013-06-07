@@ -64,9 +64,12 @@ port=self.server_port)
 		# Query Hive and fill HBase table
 		client = hiver.connect('localhost', 10000)
 		client.execute('USE usn')
-		client.execute('SELECT username, friend FROM usn_friends')
+		client.execute('SELECT actiontime, username, friend FROM usn_friends')
 		rows = client.fetchAll()
-		print rows
+		for row in rows:
+			fields = row.split(' ')
+			t_key = fields[0].split('T')[0]
+			print fields[0], t_key
 		logging.info('Initialized USN tables in serving layer.')
 	
 	def clear(self):
