@@ -62,11 +62,12 @@ port=self.server_port)
 		self.create_table(table_name=TABLE_USN_FRIENDS, col_fam={'a': {}})
 
 		# Query Hive and fill HBase table
-		# client = hiver.connect('localhost', 10000)
-		# client.execute('SELECT username, friend FROM usn_friends')
-		# rows = client.fetchAll()
-		# print rows
-		logging.info('Initialized USN table.')
+		client = hiver.connect('localhost', 10000)
+		client.execute('USE usn')
+		client.execute('SELECT username, friend FROM usn_friends')
+		rows = client.fetchAll()
+		print rows
+		logging.info('Initialized USN tables in serving layer.')
 	
 	def clear(self):
 		"""Disables and drops the USN table."""

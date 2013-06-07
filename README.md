@@ -78,8 +78,6 @@ Hive:
 	      WHERE action = 'ADD'
 	      ORDER BY username, network, username;
 
-
-
 ### Serving layer
 
 Make sure you have HBase 0.94.x installed or access to a setup (cluster, cloud) 
@@ -103,16 +101,25 @@ Go to the HBase home directory and do the following:
 
 **Init** First you need to initialize the USN table.
 
-Make sure Hive service is running:
+Note that you need to do the following from USN directories as shown below,
+so `cd` respectively first.
 
+Make sure Hive service is running from the USN batch layer directory:
+
+	$ pwd
+	/Users/mhausenblas2/Documents/repos/usn-app/batch-layer
 	$ hive --service hiveserver
 	Starting Hive Thrift Server
 	...
 
-Then, from the USN home directory, do the following:
+Then,`cd` into the parent directory of the batch layer directory and
+execute the following:
 
+	$ pwd
+	/Users/mhausenblas2/Documents/repos/usn-app
 	$ python serving-layer.py localhost INIT
-	2013-05-31T09:39:38 Initialized USN table.
+	...
+	2013-06-07T06:02:53 Initialized USN tables in serving layer.
 
 You can use the shell to verify if the serving layer has been initialized correctly:
 
