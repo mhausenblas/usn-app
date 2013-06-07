@@ -165,8 +165,8 @@ TBD.
 
 * Generate the data - DONE
 * Implement the batch layer using Hive - DONE
-* Implement the serving layer using HBase
-* Implement user interface and some examples
+* Implement the serving layer using HBase - DONE
+* List typical queries and implement user interface and some examples
 
 ## License
 
