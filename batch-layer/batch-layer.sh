@@ -37,12 +37,16 @@ function usn_check() {
 	fi
 }
 
-USN_CREATE_BASE=usn_create_base.hql
-USN_CHECK_BASE=usn_check_base.hql
-USN_DUMP_BASE=usn_dump_base.hql
+# Some variable declarations
+USN_CREATE=usn_create.hql
+USN_DESTROY=usn_destroy.hql
+USN_CHECK_BASE=usn_base_check.hql
+USN_DUMP_BASE=usn_base_dump.hql
 
+# Main script
 case $1 in
-	INIT )	exec_hive_from_file $USN_CREATE_BASE  ;;
-	CHECK )	usn_check  ;;
-	* )		usage ; exit 1 ; ;;
+ INIT )    exec_hive_from_file $USN_CREATE ; echo "USN batch layer created." ;;
+ DESTROY ) exec_hive_from_file $USN_DESTROY ; echo "USN batch layer removed." ;;
+ CHECK )   usn_check ;;
+ * )       usage ; exit 1 ; ;;
 esac
