@@ -1,6 +1,6 @@
 # UberSocialNet - applying the Lambda Architecture
 
-**Summary**
+### Summary
 
 Recently, Nathan Marz introduced the [Lambda Architecture](http://manning.com/marz/)
 for realising large-scale data processing applications. In this article, we will
@@ -13,7 +13,7 @@ that is, social networks such as Twitter, Facebook, LinkedIn, G+, etc. or the re
 The goal is that USN can serve more than one billion users while providing low-latency 
 access to the annotations we keep about where and how we know people.
 
-**Contents**
+### Contents
 
 * [The Raw Input Data](https://github.com/mhausenblas/usn-app#the-raw-input-data)
 * [Generation of the Layers](https://github.com/mhausenblas/usn-app#generation-of-the-layers)
@@ -57,6 +57,7 @@ All fields are always present, that is, there are no optional fields. The test
 data has been generated using [generatedata.com](http://www.generatedata.com/) 
 in five runs totaling some 500 rows of raw data. 
 
+[*Back to ToC*](https://github.com/mhausenblas/usn-app#contents)
 
 ## Generation of the Layers
 
@@ -234,6 +235,8 @@ The Hive service can simply be stopped by hitting `CTRL+C`.
 You're now done with generating the necessary layers for the USN app and can
 start using it. I'll show you how in the next section.
 
+[*Back to ToC*](https://github.com/mhausenblas/usn-app#contents)
+
 ## Usage
 
 ### Dependencies 
@@ -288,6 +291,8 @@ main USN directory do the following:
 All artifacts in this repository, including data and code are donated into
 the Public Domain. The author would like to thank MapR Technologies for
 sponsoring the work on the USN app.
+
+[*Back to ToC*](https://github.com/mhausenblas/usn-app#contents)
 
 ## Notes and Background
 
