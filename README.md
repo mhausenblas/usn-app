@@ -248,9 +248,29 @@ main USN directory do the following:
 	This is USN v0.0
 	
 	u ... user listings, n ... network listings, l ... lookup, s ... search, h ... help, q ... quit
-	Your selection:
+	Your selection: s
+	The name of the person you want to search?
+	Name >Kevin
+	User 'Ellen' has 'Kevin Bowman' from Google+ in his network.
+	*** Found 1 matches in total
 
-A recorded USN session from the CLI user interface is available here.
+	u ... user listings, n ... network listings, l ... lookup, s ... search, h ... help, q ... quit
+	Your selection: l
+	List acquintances of which user?
+	One of: Ellen, John, Karen, Michael, Steve, Ted >Ellen
+	From when?
+	In the form YYYY-MM-DD, such as 2013-01-01 or only 2012 >2012-05-01
+	(OPTIONAL) Until when?
+	In the form YYYY-MM-DD, such as 2013-01-01 or only 2012 >2012-08-01
+	(OPTIONAL) From which network?
+	One of: I - in-real-life, T - Twitter, L - LinkedIn, F - Facebook, G - Google+ >
+	Nicole Tyson from Twitter
+	Vielka Barr from Google+
+	Latifah Horton from Google+
+	Dorothy Roy from real life
+	Myles Greer from LinkedIn
+	Cecilia Vance from real life
+	*** Found 6 matches in total
 
 ### License
 
