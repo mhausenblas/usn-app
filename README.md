@@ -251,7 +251,7 @@ The following components and tools are assumed to be available:
 Then, the pre-processing steps as explained above (batch and serving layer
 generation) must be done.
 
-### CLI User Interface
+### CLI Front-end
 
 After you've prepared and init the batch and serving layers as described above
 you can launch the user interface, a simple CLI for now. Make sure that HBase
@@ -285,6 +285,16 @@ main USN directory do the following:
 	Myles Greer from LinkedIn
 	Cecilia Vance from real life
 	*** Found 6 matches in total
+
+The three main operations the USN front-end provides are:
+
+* `u` ... user listing: lists *all* acquaintances of a user
+* `n` ... network listing: lists acquaintances of a user in a network
+* `l` ... lookup listing: lists acquaintances of a user in a network and allows 
+to restrict the time range (from/to) of the acquaintanceship 
+* `s` ... search: provides search for an acquaintance over all users 
+(with partial match)
+
 
 ### License
 
@@ -331,7 +341,7 @@ has the following schema:
 
 ![USN's HBase schema](https://raw.github.com/mhausenblas/usn-app/master/doc/hbase-usn-schema.png "USN's HBase schema")
 
-Some notes re the key and schema design:
+Some notes regarding the key and schema design:
 
 * There is only one CF named `a`; keep CF names short, think of footprint.
 * This CF holds all the data: the target person, from where known, comment.
@@ -342,9 +352,16 @@ from years over months down to days.
 
 ### Wire-level Architecture
 
-* build-time vs. run-time
-* Raw input data (CSV)
-* Hive/HDFS
-* HBase
-* Scripts
-* UI
+![USN's architecture](https://raw.github.com/mhausenblas/usn-app/master/doc/usn-architecture.png "USN's architecture")
+
+Some notes regarding architecture:
+
+* **Build-time vs. Run-time.** In one phase, the dataspace is built, then the
+application can use the data in the front-end (CLI user interface).
+* **Pre-processing.** In the pre-processing phase a script cleans the CSV data
+and prepares it for ingestion into HDFS. 
+* **Batch Layer.** A script uses Hive to ETL the CSV data into HDFS.
+* **Serving Layer.** A script uses the data from HDFS and loads it into HBase.
+Further, this layer provides query capabilities to drive the front-end. 
+* **CLI user interface.** The front-end interacts with the end-user, providing
+`listing`, `lookup` and `search` operations.

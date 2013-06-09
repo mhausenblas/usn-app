@@ -109,19 +109,19 @@ port=self.server_port)
 		print "\n\nu ... user listings, n ... network listings, l ... lookup, s ... search, h ... help, q ... quit"
 	
 	def query_user(self):
-		user = raw_input("List acquintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted >")
+		user = raw_input("List acquaintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted >")
 		logging.debug('Selected user is %s' %user)
 		self.scan_table(table_name=TABLE_USN_FRIENDS, start=user, stop=user+'z', cols=('a:name', 'a:network'))
 		
 	def query_network(self):
-		user = raw_input("List acquintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted >")
+		user = raw_input("List acquaintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted >")
 		logging.debug('Selected user is %s' %user)
 		network = raw_input("From which network?\nOne of: I - in-real-life, T - Twitter, L - LinkedIn, F - Facebook, G - Google+ >")
 		logging.debug('Selected network is %s' %network)
 		self.scan_table(table_name=TABLE_USN_FRIENDS, start=user, stop=user+'z', cols=('a:name', 'a:network'), filter=network)
 
 	def lookup(self):
-		user = raw_input("List acquintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted >")
+		user = raw_input("List acquaintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted >")
 		logging.debug('Selected user is %s' %user)
 		start_date = raw_input("From when?\nIn the form YYYY-MM-DD, such as 2013-01-01 or only 2012 >")
 		logging.debug('Start date is %s' %start_date)
