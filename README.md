@@ -12,7 +12,7 @@ Facebook, LinkedIn, G+, etc. or the real life. The goal is that USN can serve
 more than one billion users while providing low-latency access to the 
 annotations we keep about where and how we know people.
 
-## Data
+## The raw data
 
 The [raw 
 data](https://github.com/mhausenblas/usn-app/blob/master/data/usn-base-data.csv)
@@ -46,9 +46,9 @@ data has been generated using [generatedata.com](http://www.generatedata.com/)
 in five runs totaling some 500 rows of raw data. 
 
 
-## Processing
+## Generation of the layers
 
-## Batch layer
+### Batch layer
 
 Make sure you have Hive 0.10.0 installed or access to a setup (cluster, cloud) 
 where it is running.
@@ -155,25 +155,35 @@ Oh. And when you're done, don't forget to shut down HBase (again, from HBase hom
 	$ ./bin/stop-hbase.sh
 
 
-## Architecture
+## Usage
 
-TBD.
+### Dependencies 
 
-## Dependencies 
+The following components and tools are assumed to be available:
 
 * Hive 0.10.x
 * [Hiver](https://github.com/tebeka/hiver) for Python interaction
 * HBase 0.94.x
 * [HappyBase](https://github.com/wbolster/happybase) for Python interaction
 
-## To do
+Then, the pre-processing steps as explained above (batch and serving layer
+generation) must be done.
 
-* Generate the data - DONE
-* Implement the batch layer using Hive - DONE
-* Implement the serving layer using HBase - DONE
-* List typical queries and implement user interface and some examples
+### CLI User Interface
 
-## License
+After you've prepared and init the batch and serving layers as described above
+you can launch the user interface (pure CLI for now):
+
+	$ ./usn-ui.sh
+	This is USN v0.0
+	
+	
+	u ... user listings, n ... network listings, l ... lookup, h ... help, q ... quit
+	Your selection:
+
+A recorded USN session from the CLI user interface is available here.
+
+### License
 
 All artifacts in this repository, including data and code are donated into
 the Public Domain. The author would like to thank MapR Technologies for
