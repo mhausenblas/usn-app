@@ -90,26 +90,41 @@ port=self.server_port)
 		else:
 			logging.info('USN table did not exist, so no action required.')
 	
-	def scan_table(self, table_name, pattern=None):
-		"""Scans a table using filter"""
+	def serve(self):
+		menu_options = { 'u' : self.query_user, 'n' : self.query_network, 'h' : self.show_help } 
+		choice = "z"
+		self.show_help()
+		while choice != 'q': 
+			try: 
+				menu_options[choice]() 
+			except KeyError:
+				pass
+			choice = raw_input("Your selection: ")
+
+	def show_help(self):
+		print "u ... user listings, n ... networks listings, h ... help, q ... quit"
+	
+	def query_user(self):
+		user = raw_input("Which user? (one of: Ellen, John, Karen, Michael, Steve, Ted )")
+		logging.debug('Selected user is %s' %user)
+		self.scan_table(table_name=TABLE_USN_FRIENDS, start=user , stop='Z', cols='a', filter='*')
+		
+	def query_network(self):
+		pass
+
+	def scan_table(self, table_name, start, stop, cols, filter):
+		"""Scans a HBase table using filter."""
 		table = self.connection.table(table_name)
-		if pattern:
-			if all(ord(c) < 128 for c in pattern): # pure ASCII string
-				p = pattern
-			else: # @@TODO: needs a more elegant way
-				p = repr(pattern)
-				p = p[1:-1]
+		if all(ord(c) < 128 for c in filter): # pure ASCII string
+			p = filter
+		else: # @@TODO: needs a more elegant way
+			p = repr(filter)
+			p = p[1:-1]
 				
-			filter_str = 'ValueFilter(=,\'substring:%s\')' %str(p)
-			logging.info('Scanning table %s with filter %s' 
-%(table_name, str(filter_str)))
-			for key, data in table.scan(filter=filter_str):
-				logging.info('Key: %s - Value: %s' %(key, 
-str(data)))
-		else:
-			logging.info('Scanning table %s' %(table_name))
-			for key, data in table.scan():
-				logging.info('Key: %s - Value: %s' %(key, data))
+		filter_str = 'ValueFilter(=,\'substring:%s\')' %str(p)
+		logging.info('Scanning %s with %s' %(table_name, str(filter_str)))
+		for key, data in table.scan(row_start=start, row_stop=stop, columns=cols, filter=filter_str):
+			print('Key: %s - Value: %s' %(key, str(data)))
 	
 
 #############
@@ -125,6 +140,8 @@ if __name__ == '__main__':
 				usn_proxy.init()
 			elif proxy_op == 'CLEAR':
 				usn_proxy.clear()
+			elif proxy_op == 'SERVE':
+				usn_proxy.serve()
 			else:
 				print __doc__
 		else: print __doc__
