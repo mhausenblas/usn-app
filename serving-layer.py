@@ -34,6 +34,10 @@ datefmt='%Y-%m-%dT%I:%M:%S')
 
 TABLE_USN_FRIENDS = 'usn_friends'
 HBASE_THRIFT_PORT = 9191
+NETWORKS_MAP = { 'I' : 'real life', 'T' : 'Twitter', 'L' : 'LinkedIn',
+'F' : 'Facebook', 'G' : 'Google+'} 
+
+
 
 class USNHBaseProxy(object):
 	"""A proxy for managing USN tables in HBase (Thrift-based)"""
@@ -91,41 +95,71 @@ port=self.server_port)
 			logging.info('USN table did not exist, so no action required.')
 	
 	def serve(self):
-		menu_options = { 'u' : self.query_user, 'n' : self.query_network, 'h' : self.show_help } 
+		menu_options = { 'u' : self.query_user, 'n' : self.query_network, 'l' : self.lookup, 'h' : self.show_help } 
 		choice = "z"
-		self.show_help()
 		while choice != 'q': 
 			try: 
 				menu_options[choice]() 
 			except KeyError:
 				pass
+			self.show_help()
 			choice = raw_input("Your selection: ")
 
 	def show_help(self):
-		print "u ... user listings, n ... networks listings, h ... help, q ... quit"
+		print "\n\nu ... user listings, n ... network listings, l ... lookup, h ... help, q ... quit"
 	
 	def query_user(self):
-		user = raw_input("Which user? (one of: Ellen, John, Karen, Michael, Steve, Ted )")
+		user = raw_input("List acquintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted\n>")
 		logging.debug('Selected user is %s' %user)
-		self.scan_table(table_name=TABLE_USN_FRIENDS, start=user , stop='Z', cols='a', filter='*')
+		self.scan_table(table_name=TABLE_USN_FRIENDS, start=user, stop=user+'z', cols=('a:name', 'a:network'))
 		
 	def query_network(self):
-		pass
+		user = raw_input("List acquintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted\n>")
+		logging.debug('Selected user is %s' %user)
+		network = raw_input("From which network?\nOne of: I - in-real-life, T - Twitter, L - LinkedIn, F - Facebook, G - Google+\n>")
+		logging.debug('Selected network is %s' %network)
+		self.scan_table(table_name=TABLE_USN_FRIENDS, start=user, stop=user+'z', cols=('a:name', 'a:network'), filter=network)
 
-	def scan_table(self, table_name, start, stop, cols, filter):
+	def lookup(self):
+		user = raw_input("List acquintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted\n>")
+		logging.debug('Selected user is %s' %user)
+		start_date = raw_input("From when?\nIn the form YYYY-MM-DD, such as 2013-01-01 or only 2012\n>")
+		logging.debug('Start date is %s' %start_date)
+		end_date = raw_input("(OPTIONAL) Until when?\nIn the form YYYY-MM-DD, such as 2013-01-01 or only 2012\n>")
+		logging.debug('End date is %s' %end_date)
+		if not end_date:
+			end_date = 'z'
+		network = raw_input("(OPTIONAL) From which network?\nOne of: I - in-real-life, T - Twitter, L - LinkedIn, F - Facebook, G - Google+\n>")
+		logging.debug('Selected network is %s' %network)
+		self.scan_table(table_name=TABLE_USN_FRIENDS, start=user+'_'+start_date, stop=user+'_'+end_date, cols='a', filter=network)
+
+	def scan_table(self, table_name, start, stop, cols, filter=None):
 		"""Scans a HBase table using filter."""
 		table = self.connection.table(table_name)
-		if all(ord(c) < 128 for c in filter): # pure ASCII string
-			p = filter
-		else: # @@TODO: needs a more elegant way
-			p = repr(filter)
-			p = p[1:-1]
-				
-		filter_str = 'ValueFilter(=,\'substring:%s\')' %str(p)
-		logging.info('Scanning %s with %s' %(table_name, str(filter_str)))
-		for key, data in table.scan(row_start=start, row_stop=stop, columns=cols, filter=filter_str):
-			print('Key: %s - Value: %s' %(key, str(data)))
+		result_set_size = 0
+		
+		if filter:
+			if all(ord(c) < 128 for c in filter): # pure ASCII string
+				p = filter
+			else: # @@TODO: needs a more elegant way
+				p = repr(filter)
+				p = p[1:-1]
+			filter_str = 'ValueFilter(=,\'substring:%s\')' %str(p)
+
+			logging.debug('Scanning %s from %s to %s with %s' %(table_name, start, stop, filter_str))
+			for key, data in table.scan(row_start=start, row_stop=stop, columns=cols, filter=filter_str):
+				self.display_user_network_result(data)
+				result_set_size = result_set_size + 1 
+		else:
+			logging.debug('Scanning %s from %s to %s' %(table_name, start, stop))
+			for key, data in table.scan(row_start=start, row_stop=stop, columns=cols):
+				self.display_user_network_result(data)
+				result_set_size = result_set_size + 1 
+				# print('Key: %s - Value: %s' %(key, str(data)))
+		print '*** Found %d matches in total' %result_set_size
 	
+	def display_user_network_result(self, data):
+		print "%s from %s" %(data['a:name'], NETWORKS_MAP[data['a:network']] )
 
 #############
 # Main script
