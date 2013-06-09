@@ -2,17 +2,18 @@
 
 **Summary**
 
-Recently, Nathan Marz introduced the Lambda Architecture for realising 
-large-scale data processing applications. In this article, we step-by-step 
-walk through how to build an application based on this architecture:
-*UberSocialNet* (USN), a little helper tool that allows us to keep track of
-where we know people from. USN lets us record if we happen to know someone 
-from either the digital world, that is, social networks such as Twitter,
-Facebook, LinkedIn, G+, etc. or the real life. The goal is that USN can serve 
-more than one billion users while providing low-latency access to the 
-annotations we keep about where and how we know people.
+Recently, Nathan Marz introduced the [Lambda Architecture](http://manning.com/marz/)
+for realising large-scale data processing applications. In this article, we will
+walk step-by-step through how to build an application based on this architecture:
+The *UberSocialNet* (USN), a little helper tool that allows us to keep track of
+where we know people from. 
 
-## The raw data
+The USN lets us record if we happen to know someone from either the digital world, 
+that is, social networks such as Twitter, Facebook, LinkedIn, G+, etc. or the real life. 
+The goal is that USN can serve more than one billion users while providing low-latency 
+access to the annotations we keep about where and how we know people.
+
+## The Raw Input Data
 
 The [raw 
 data](https://github.com/mhausenblas/usn-app/blob/master/data/usn-base-data.csv)
@@ -46,9 +47,43 @@ data has been generated using [generatedata.com](http://www.generatedata.com/)
 in five runs totaling some 500 rows of raw data. 
 
 
-## Generation of the layers
+## Generation of the Layers
 
-### Batch layer
+First, I'm going to show you the three commands you have to run to generate
+the two layers (batch and serving) of the USN app and then we will have a
+closer look behind the scenes of each of the commands.
+
+To build the datastore for USN, run the following commands:
+
+*1.* To pre-process the raw data, in the `data` dir:
+
+	$ pwd
+	/Users/mhausenblas2/Documents/repos/usn-app/data
+	$ ./usn-preprocess.sh < usn-raw-data.csv > usn-base-data.csv
+
+*2.* To build the batch layer, with the Hive Thrift service running,
+   in the `batch-layer` dir:
+
+	$ pwd
+	/Users/mhausenblas2/Documents/repos/usn-app/batch-layer
+	$ ./batch-layer.sh INIT
+	USN batch layer created.
+	$ ./batch-layer.sh CHECK
+	The USN batch layer seems OK.
+
+*3.* To build the serving layer, with both the Hive and HBase Thrift service 
+   running, in the main USN dir:
+	
+	$ pwd
+	/Users/mhausenblas2/Documents/repos/usn-app
+	$ python serving-layer.py localhost INIT
+	...
+	2013-06-07T06:02:53 Initialized USN tables in serving layer.
+
+As you now have an idea what to do, we will have a closer look at each of the
+steps and see what is going on exactly in the next subsections.
+
+### Batch Layer
 
 Make sure you have Hive 0.10.0 installed or access to a setup (cluster, cloud) 
 where it is running.
@@ -57,7 +92,7 @@ The raw data is first
 [pre-processed
 ](https://github.com/mhausenblas/usn-app/blob/master/data/usn-preprocess.sh) and 
 [loaded](https://github.com/mhausenblas/usn-app/blob/master/hive-cmds.txt) into 
-Hive:
+Hive like so:
 
 	hive> CREATE TABLE usn_base (
 	 actiontime STRING,
@@ -78,31 +113,14 @@ Hive:
 	      WHERE action = 'ADD'
 	      ORDER BY username, network, username;
 
-### Serving layer
+So to pre-process the raw data, change into the `data` directory and execute 
+the following:
 
-Make sure you have HBase 0.94.x installed or access to a setup (cluster, cloud) 
-where it is running.
+	$ pwd
+	/Users/mhausenblas2/Documents/repos/usn-app/data
+	$ ./usn-preprocess.sh < usn-raw-data.csv > usn-base-data.csv
 
-**Preparation** First you need to launch HBase and the Thrift server. 
-
-Go to the HBase home directory and do the following:
-
-	$ ./bin/start-hbase.sh 
-	
-	starting master, logging to /Users/mhausenblas2/bin/hbase-0.94.4/logs/hbase-mhausenblas2-master-Michaels-MacBook-Pro-2.local.out
-
-	$ ./bin/hbase thrift start -p 9191
-	13/05/31 09:39:09 INFO util.VersionInfo: HBase 0.94.4
-	13/05/31 09:39:09 INFO util.VersionInfo: Subversion https://svn.apache.org/repos/asf/hbase/branches/0.94 -r 1428173
-	13/05/31 09:39:09 INFO util.VersionInfo: Compiled by jenkins on Thu Jan  3 06:29:56 UTC 2013
-	13/05/31 09:39:09 INFO thrift.ThriftServerRunner: Using default thrift server type
-	13/05/31 09:39:09 INFO thrift.ThriftServerRunner: Using thrift server type threadpool
-	...
-
-**Init** First you need to initialize the USN table.
-
-Note that you need to do the following from USN directories as shown below,
-so `cd` respectively first.
+Then, to build the batch layer from scratch, perform the following steps.
 
 Make sure Hive service is running from the USN batch layer directory:
 
@@ -112,7 +130,51 @@ Make sure Hive service is running from the USN batch layer directory:
 	Starting Hive Thrift Server
 	...
 
-Then,`cd` into the parent directory of the batch layer directory and
+And finally, from within the `batch-layer` directory:
+
+	$ pwd
+	/Users/mhausenblas2/Documents/repos/usn-app/batch-layer
+	$ ./batch-layer.sh INIT
+	USN batch layer created.
+	$ ./batch-layer.sh CHECK
+	The USN batch layer seems OK.
+
+Now the batch layer is built in and available in HDFS. Next we will build the
+serving layer in HBase.
+
+### Serving Layer
+
+Make sure you have HBase 0.94.x installed or access to a setup (cluster, cloud) 
+where it is running.
+
+**Preparation** First you need to launch HBase and the HBase Thrift server. 
+
+Go to the HBase home directory (`$HBASE_HOME`) and do the following:
+
+	$ echo $HBASE_HOME
+	/Users/mhausenblas2/bin/hbase-0.94.4
+	$ cd /Users/mhausenblas2/bin/hbase-0.94.4
+	$ ./bin/start-hbase.sh 
+	
+	starting master, logging to /Users/...
+
+	$ ./bin/hbase thrift start -p 9191
+	13/05/31 09:39:09 INFO util.VersionInfo: HBase 0.94.4
+	...
+
+Also, make sure that the Hive service is running. In case you've shut it
+down after the batch layer generation, restart it. So, from the USN batch 
+layer directory do:
+
+	$ pwd
+	/Users/mhausenblas2/Documents/repos/usn-app/batch-layer
+	$ hive --service hiveserver
+	Starting Hive Thrift Server
+	...
+
+**Init** First you need to initialize the USN table.
+
+Change to the parent directory of the batch layer directory and
 execute the following:
 
 	$ pwd
@@ -121,7 +183,8 @@ execute the following:
 	...
 	2013-06-07T06:02:53 Initialized USN tables in serving layer.
 
-You can use the shell to verify if the serving layer has been initialized correctly:
+You can use the HBase shell to verify if the serving layer has been 
+initialized correctly:
 
 	$ ./bin/hbase shell
 	hbase(main):001:0> describe 'usn_friends'
@@ -135,7 +198,7 @@ You can use the shell to verify if the serving layer has been initialized correc
 	hbase(main):002:0> count 'usn_friends'
 	499 row(s) in 0.0540 seconds
 	
-A sample query (scan, in HBase jargon) might look as follows:
+A sample query might now look as follows:
 
 	hbase(main):001:0> scan 'usn_friends', { COLUMNS => ['a'], FILTER => "ValueFilter(=,'substring:L')", STARTROW => 'Ted_2013-01'}
 	ROW                                      COLUMN+CELL
@@ -150,10 +213,15 @@ The above query translates into: give me all acquaintances of `Ted` in the
 You can have a look at some more queries used in the demo user interface
 on the [respective Wiki page](https://github.com/mhausenblas/usn-app/wiki/Serving-Layer).
 
-Oh. And when you're done, don't forget to shut down HBase (again, from HBase home):
+Oh. And when you're done, don't forget to shut down HBase 
+(again, from HBase home):
 
 	$ ./bin/stop-hbase.sh
 
+The Hive service can simply be stopped by hitting `CTRL+C`.
+
+You're now done with generating the necessary layers for the USN app and can
+start using it. I'll show you how in the next section.
 
 ## Usage
 
