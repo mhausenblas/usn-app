@@ -277,3 +277,41 @@ main USN directory do the following:
 All artifacts in this repository, including data and code are donated into
 the Public Domain. The author would like to thank MapR Technologies for
 sponsoring the work on the USN app.
+
+## Notes and Background
+
+In the following some notes and background information that is not necessary
+to toy around with USN but might be of interest for the one or the other.
+
+### Improvements
+
+The demo app USN is intentionally kept very simple. Though fully functional,
+the USN app has a number of serious limitations. You're welcome to fork it
+and extend it. Please let me know if you do so.
+
+* **Big Data?** The most obvious point is not the app itself but the data size.
+Only laughable 500 rows? This isn't Big Data I hear you say. Rightly so. Now,
+no one stops you generating 500 million rows or more and try it out. Certain
+processes such as pre-processing and the generating the layers will take longer
+however there are no architectural changes necessary, and this was the whole
+point of the USN app.
+* **Dynamic batch layer.** Currently, the batch layer is a sort of one-shot, 
+while it should really run in a loop and append new data. This requires
+partitioning of the ingested data and some checks. 
+[Pail](https://github.com/nathanmarz/dfs-datastores), for example, allows you to
+do the ingestion and partitioning in a very elegant way.
+* **Automated import.** It would be cool to automate the import of data from the
+different networks. 
+For example, [Google Takeout](https://www.google.com/takeout/) allows to export
+all data, including G+ Circles. Similar functionality is available from Twitter
+and Facebook.
+* **More views**. There is only one view in the serving layer. The USN app might
+benefit from different views to enable different queries most efficiently.
+
+### HBase Schema
+TBD
+
+### Wire-level Architecture
+TBD
+
+
