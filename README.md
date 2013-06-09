@@ -325,9 +325,26 @@ and Facebook.
 benefit from different views to enable different queries most efficiently.
 
 ### HBase Schema
-TBD
+
+The HBase table `usn_friends`, used in the serving layer to drive the USN app
+has the following schema:
+
+![USN's HBase schema](https://raw.github.com/mhausenblas/usn-app/master/doc/hbase-usn-schema.png "USN's HBase schema")
+
+Some notes re the key and schema design:
+
+* There is only one CF named `a`; keep CF names short, think of footprint.
+* This CF holds all the data: the target person, from where known, comment.
+* The row keys encode the user name and the date of the activity, that is
+when a target has been added to the user's network. This allows to query by
+user and by date range; actually this design allows several date ranges,
+from years over months down to days.
 
 ### Wire-level Architecture
-TBD
 
-
+* build-time vs. run-time
+* Raw input data (CSV)
+* Hive/HDFS
+* HBase
+* Scripts
+* UI
