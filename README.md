@@ -132,6 +132,9 @@ You can use the shell to verify if the serving layer has been initialized correc
 	  'true', BLOCKCACHE => 'false'}]}
 	1 row(s) in 0.2450 seconds
 	
+	hbase(main):002:0> count 'usn_friends'
+	499 row(s) in 0.0540 seconds
+	
 A sample query (scan, in HBase jargon) might look as follows:
 
 	hbase(main):001:0> scan 'usn_friends', { COLUMNS => ['a'], FILTER => "ValueFilter(=,'substring:L')", STARTROW => 'Ted_2013-01'}
@@ -144,10 +147,12 @@ A sample query (scan, in HBase jargon) might look as follows:
 The above query translates into: give me all acquaintances of `Ted` in the
 `LinkedIn` network, starting from January 2013 on. 
 
-When you're done, don't forget to shut down HBase (again, from HBase home):
+You can have a look at some more queries used in the demo user interface
+on the [respective Wiki page](https://github.com/mhausenblas/usn-app/wiki/Serving-Layer).
+
+Oh. And when you're done, don't forget to shut down HBase (again, from HBase home):
 
 	$ ./bin/stop-hbase.sh
-
 
 
 ## Architecture
