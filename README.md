@@ -139,7 +139,7 @@ And finally, from within the `batch-layer` directory:
 	$ ./batch-layer.sh CHECK
 	The USN batch layer seems OK.
 
-Now the batch layer is built in and available in HDFS. Next we will build the
+Now the batch layer is generated and available in HDFS. Next we will build the
 serving layer in HBase.
 
 ### Serving Layer
@@ -240,13 +240,14 @@ generation) must be done.
 ### CLI User Interface
 
 After you've prepared and init the batch and serving layers as described above
-you can launch the user interface (pure CLI for now):
+you can launch the user interface, a simple CLI for now. Make sure that HBase
+and the HBase Thrift service (details, see above) are running, then, in the
+main USN directory do the following:
 
 	$ ./usn-ui.sh
 	This is USN v0.0
 	
-	
-	u ... user listings, n ... network listings, l ... lookup, h ... help, q ... quit
+	u ... user listings, n ... network listings, l ... lookup, s ... search, h ... help, q ... quit
 	Your selection:
 
 A recorded USN session from the CLI user interface is available here.

@@ -95,7 +95,7 @@ port=self.server_port)
 			logging.info('USN table did not exist, so no action required.')
 	
 	def serve(self):
-		menu_options = { 'u' : self.query_user, 'n' : self.query_network, 'l' : self.lookup, 'h' : self.show_help } 
+		menu_options = { 'u' : self.query_user, 'n' : self.query_network, 'l' : self.lookup, 's' : self.search, 'h' : self.show_help } 
 		choice = "z"
 		while choice != 'q': 
 			try: 
@@ -106,7 +106,7 @@ port=self.server_port)
 			choice = raw_input("Your selection: ")
 
 	def show_help(self):
-		print "\n\nu ... user listings, n ... network listings, l ... lookup, h ... help, q ... quit"
+		print "\n\nu ... user listings, n ... network listings, l ... lookup, s ... search, h ... help, q ... quit"
 	
 	def query_user(self):
 		user = raw_input("List acquintances of which user?\nOne of: Ellen, John, Karen, Michael, Steve, Ted\n>")
@@ -133,6 +133,22 @@ port=self.server_port)
 		logging.debug('Selected network is %s' %network)
 		self.scan_table(table_name=TABLE_USN_FRIENDS, start=user+'_'+start_date, stop=user+'_'+end_date, cols='a', filter=network)
 
+	def search(self):
+		table = self.connection.table(TABLE_USN_FRIENDS)
+		result_set_size = 0
+		
+		target = raw_input("The name of the person you want to search?\nName\n>")
+		target = str(target)
+		filter_str = 'SingleColumnValueFilter(\'a\',\'name\',=,\'regexstring:%s\',true,true)' %target
+
+		logging.debug('Scanning %s for target %s' %(TABLE_USN_FRIENDS, filter_str))
+		for key, data in table.scan(filter=filter_str):
+			username = key.split('_')[0]
+			print 'User \'%s\' has \'%s\' from %s in his network.' %(username, data['a:name'], NETWORKS_MAP[data['a:network']] )			
+			logging.debug('Key: %s - Value: %s' %(key, str(data)))
+			result_set_size = result_set_size + 1 
+		print '*** Found %d matches in total' %result_set_size
+
 	def scan_table(self, table_name, start, stop, cols, filter=None):
 		"""Scans a HBase table using filter."""
 		table = self.connection.table(table_name)
@@ -145,7 +161,7 @@ port=self.server_port)
 				p = repr(filter)
 				p = p[1:-1]
 			filter_str = 'ValueFilter(=,\'substring:%s\')' %str(p)
-
+			
 			logging.debug('Scanning %s from %s to %s with %s' %(table_name, start, stop, filter_str))
 			for key, data in table.scan(row_start=start, row_stop=stop, columns=cols, filter=filter_str):
 				self.display_user_network_result(data)
@@ -155,7 +171,7 @@ port=self.server_port)
 			for key, data in table.scan(row_start=start, row_stop=stop, columns=cols):
 				self.display_user_network_result(data)
 				result_set_size = result_set_size + 1 
-				# print('Key: %s - Value: %s' %(key, str(data)))
+		
 		print '*** Found %d matches in total' %result_set_size
 	
 	def display_user_network_result(self, data):
